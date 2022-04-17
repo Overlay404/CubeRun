@@ -18,7 +18,7 @@ namespace CubeRun
 
         public Cube(float x, float y, int size)
         {
-            cubeImage = new Bitmap("C:\\Users\\Overlay\\Desktop\\cube1.png");
+            cubeImage = new Bitmap("C:\\Users\\Overlay\\source\\repos\\CubeRun\\img\\cube1.png");
             this.x = x;
             this.y = y;
             this.size = size;
