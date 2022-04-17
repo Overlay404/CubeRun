@@ -12,64 +12,70 @@ namespace CubeRun
 {
     public partial class Form1 : Form
     {
-        Graphics gr;       //объявляем объект - графику, на которой будем рисовать
-        Pen p;             //объявляем объект - карандаш, которым будем рисовать контур
-        SolidBrush fon;    //объявляем объект - заливки, для заливки соответственно фона
-        SolidBrush fig;    //и внутренности рисуемой фигуры
-        Random rnd;
-
-        Point DownPoint;   //точка перемещения
-        bool IsDragMode;   //нажата ли кнопка мыши
-
+        Graphics gr;
+        Pen p;
+        private float x = 200.0f;
+        private float y = 200.0f;
+        private int xPos;
+        private int yPos;
+        Cube cube;
         public Form1()
         {
             InitializeComponent();
-            pictureBox1.Left = 0;
-            pictureBox1.Top = 0;
+            init();
+        }
+
+        public void init()
+        {
+            cube = new Cube(x, y, 35);
+
+            timer1.Interval = 10;
+            timer1.Tick += new EventHandler(update);
+            timer1.Start();
+        }
+        public void update(object sender, EventArgs e)
+        {
+            if(yPos - cube.y > 0 && yPos - cube.y < 100 && xPos - cube.x < 20 && xPos - cube.x > 0)  //нижняя часть кубика
+            {
+                cube.y -= 0.1f * 10;
+            }
+            if (yPos - cube.y < 0 && yPos - cube.y > -100 && xPos - cube.x < 20 && xPos - cube.x > 0)// верхняя часть кубика
+            {
+                cube.y += 0.1f * 10;
+            }
+            if(yPos - cube.y < 20 && yPos - cube.y > 0 && xPos - cube.x < 100 && xPos - cube.x > 0)  // правая часть кубика
+            {
+                cube.x -= 0.1f * 10;
+            }
+            if (yPos - cube.y < 20 && yPos - cube.y > 0 && xPos - cube.x > -100 && xPos - cube.x < 0)// левая часть кубика
+            {
+                cube.x += 0.1f * 10;
+            }
+            else
+            {
+                cube.x -= 0.0001f;
+                cube.y -= 0.00001f;
+            }
+
+            label1.Text = Convert.ToString(xPos) + "; " + Convert.ToString(yPos) + "\n" + Convert.ToString((int) cube.x) + "; " + Convert.ToString((int) cube.y);
+            this.Invalidate();
+        }
+        private void OnPaint(object sender, PaintEventArgs e)
+        {
+            gr = e.Graphics;
+            gr.DrawImage(cube.cubeImage, cube.x, cube.y, cube.size, cube.size);
+        }
+
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            
         }
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
-            gr = pictureBox1.CreateGraphics();  //инициализируем объект типа графики
-
-            p = new Pen(Color.Lime);           // задали цвет для карандаша 
-            fon = new SolidBrush(Color.White); // и для заливки
-            fig = new SolidBrush(Color.Black);
-
-            gr.FillRectangle(fig, 0, 0, pictureBox1.Width, pictureBox1.Height);
-            label1.Text = "Счёт";
-            int x = Cursor.Position.X;
-            int y = Cursor.Position.Y;
-            
-            pictureBox1.Left += 1;
-            pictureBox1.Top += 1;
-        }
-
-        
-
-        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            DownPoint = e.Location;
-            IsDragMode = true;
-            base.OnMouseDown(e);
-        }
-
-        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
-        {
-
-            IsDragMode = false;
-            base.OnMouseUp(e);
-        }
-
-        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (IsDragMode)
-        {
-            Point p = e.Location;
-            Point dp = new Point(p.X - DownPoint.X, p.Y - DownPoint.Y);
-            Location = new Point(Location.X + dp.X, Location.Y + dp.Y);
-        }
-        base.OnMouseMove(e);
+            xPos = e.X;
+            yPos = e.Y;
         }
     }
 }
